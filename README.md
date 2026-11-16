@@ -4,7 +4,9 @@
 
 telematics-rewards-sim/
 ├── README.md
+
 ├── data/                 # generated CSVs (small samples only in git)
+
 ├── sql/                  # score bands, claims by band, reward cost queries
 ├── src/
 │   ├── generate_data.py
