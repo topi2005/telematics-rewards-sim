@@ -1,0 +1,91 @@
+{
+  "decile_spearman": -0.964,
+  "quintile_ratio_lowest_vs_highest": 3.58,
+  "quintile_claims_lowest": 180,
+  "quintile_claims_highest": 52,
+  "gini_test": {
+    "Hand-built score": {
+      "gini": 0.151,
+      "ci_lo": 0.06,
+      "ci_hi": 0.251
+    },
+    "Poisson regression": {
+      "gini": 0.131,
+      "ci_lo": 0.038,
+      "ci_hi": 0.226
+    },
+    "Oracle (hidden risk)": {
+      "gini": 0.227,
+      "ci_lo": 0.138,
+      "ci_hi": 0.323
+    }
+  },
+  "gini_hand_minus_poisson": {
+    "mean": 0.02,
+    "ci_lo": -0.01,
+    "ci_hi": 0.054
+  },
+  "test_drivers": 1540,
+  "test_claims": 146,
+  "gini_full_sample": {
+    "Hand-built score": {
+      "gini": 0.251,
+      "ci_lo": 0.198,
+      "ci_hi": 0.303
+    },
+    "Oracle (hidden risk)": {
+      "gini": 0.305,
+      "ci_lo": 0.256,
+      "ci_hi": 0.352
+    }
+  },
+  "weight_comparison": {
+    "speeding": {
+      "hand": 30.0,
+      "implied": 41.4,
+      "rate_ratio": 2.57,
+      "rr_lo": 1.85,
+      "rr_hi": 3.58
+    },
+    "harsh_braking": {
+      "hand": 25.0,
+      "implied": 6.8,
+      "rate_ratio": 1.17,
+      "rr_lo": 0.85,
+      "rr_hi": 1.61
+    },
+    "harsh_accel_corner": {
+      "hand": 15.0,
+      "implied": 22.9,
+      "rate_ratio": 1.69,
+      "rr_lo": 1.22,
+      "rr_hi": 2.33
+    },
+    "night_driving": {
+      "hand": 15.0,
+      "implied": 16.1,
+      "rate_ratio": 1.44,
+      "rr_lo": 1.02,
+      "rr_hi": 2.04
+    },
+    "phone_use": {
+      "hand": 15.0,
+      "implied": 12.7,
+      "rate_ratio": 1.34,
+      "rr_lo": 0.95,
+      "rr_hi": 1.88
+    }
+  },
+  "rate_ratio_per_10_points": {
+    "score_only": [
+      0.795,
+      0.761,
+      0.831
+    ],
+    "score_plus_age_region": [
+      0.802,
+      0.766,
+      0.839
+    ]
+  }
+}
