@@ -1,0 +1,77 @@
+{
+  "base": {
+    "A: Flat cashback": {
+      "effort_rate": 0.328,
+      "effort_rate_control": 0.199,
+      "goal_hit_rate": 0.318,
+      "share_driver_weeks_rewarded": 0.318,
+      "avg_score_uplift_pts": 0.796,
+      "reward_cost_per_driver": 82.646,
+      "claims_saving_per_driver": 37.794,
+      "net_per_driver": -44.852,
+      "saving_per_R1_reward": 0.457,
+      "breakeven_uplift_pts": 1.741,
+      "uplift_lowest_third": 0.508,
+      "uplift_middle_third": 1.131,
+      "uplift_highest_third": 0.75
+    },
+    "B: Streaks": {
+      "effort_rate": 0.403,
+      "effort_rate_control": 0.199,
+      "goal_hit_rate": 0.325,
+      "share_driver_weeks_rewarded": 0.325,
+      "avg_score_uplift_pts": 0.993,
+      "reward_cost_per_driver": 132.67,
+      "claims_saving_per_driver": 44.58,
+      "net_per_driver": -88.091,
+      "saving_per_R1_reward": 0.336,
+      "breakeven_uplift_pts": 2.955,
+      "uplift_lowest_third": 0.508,
+      "uplift_middle_third": 1.218,
+      "uplift_highest_third": 1.253
+    },
+    "C: Tiers + leaderboard": {
+      "effort_rate": 0.38,
+      "effort_rate_control": 0.199,
+      "goal_hit_rate": 0.324,
+      "share_driver_weeks_rewarded": 0.651,
+      "avg_score_uplift_pts": 1.204,
+      "reward_cost_per_driver": 199.722,
+      "claims_saving_per_driver": 60.053,
+      "net_per_driver": -139.669,
+      "saving_per_R1_reward": 0.301,
+      "breakeven_uplift_pts": 4.004,
+      "uplift_lowest_third": 1.075,
+      "uplift_middle_third": 1.597,
+      "uplift_highest_third": 0.941
+    }
+  },
+  "monte_carlo_net_per_driver": {
+    "A: Flat cashback": {
+      "mean": -44.5,
+      "sd": 0.4,
+      "best_share": 1.0
+    },
+    "B: Streaks": {
+      "mean": -87.2,
+      "sd": 0.5,
+      "best_share": 0.0
+    },
+    "C: Tiers + leaderboard": {
+      "mean": -139.5,
+      "sd": 0.7,
+      "best_share": 0.0
+    }
+  },
+  "ranking_changes_in_sensitivity": false,
+  "sensitivity_positive_net_counts": {
+    "A: Flat cashback": 2,
+    "B: Streaks": 0,
+    "C: Tiers + leaderboard": 0
+  },
+  "streak_shock_net_B": {
+    "0.0": -87.9,
+    "0.6": -88.1,
+    "1.2": -88.2
+  }
+}

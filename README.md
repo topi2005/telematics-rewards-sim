@@ -12,12 +12,11 @@ A simulation of how an insurer could score driving behaviour from telematics dat
 | 1 | Synthetic data generation | Done |
 | 2 | Explainable driver score | Done |
 | 3 | Validation against claims | Done |
-| 4 | Rewards simulation | To do |
+| 4 | Rewards simulation | Done |
 | 5 | SQL aggregations | To do |
 | 6 | Power BI dashboard | To do |
 | 7 | One-page summary | To do |
 
-Sections marked **[fill in]** are completed after the relevant step, using your real results. Delete this table and the markers when the project is finished.
 
 ## Purpose
 
