@@ -1,0 +1,10 @@
+design,baseline_third,drivers,avg_score_uplift_pts,reward_cost_per_driver,claims_saving_per_driver,net_per_driver
+A: Flat cashback,Lowest third,1667,0.51,0.29,34.22,33.93
+A: Flat cashback,Middle third,1666,1.13,41.54,52.25,10.72
+A: Flat cashback,Highest third,1667,0.75,206.09,26.92,-179.17
+B: Streaks,Lowest third,1667,0.51,0.29,34.22,33.93
+B: Streaks,Middle third,1666,1.22,48.27,55.87,7.6
+B: Streaks,Highest third,1667,1.25,349.4,43.66,-305.75
+C: Tiers + leaderboard,Lowest third,1667,1.07,17.66,71.71,54.04
+C: Tiers + leaderboard,Middle third,1666,1.6,164.85,74.99,-89.86
+C: Tiers + leaderboard,Highest third,1667,0.94,416.63,33.47,-383.16

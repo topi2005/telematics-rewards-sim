@@ -1,0 +1,6 @@
+band_order,score_band,drivers,pct_of_drivers,avg_score,claims,exposure_driver_years,claims_per_driver_year,relative_to_portfolio
+1,Below 50,939,18.8,37.0,170,461.5,0.3684,1.91
+2,50 to 64,1161,23.2,58.2,117,576.7,0.2029,1.05
+3,65 to 79,1620,32.4,72.9,120,806.5,0.1488,0.77
+4,80 to 89,950,19.0,84.7,60,482.1,0.1244,0.65
+5,90 and above,330,6.6,93.4,14,173.2,0.0809,0.42

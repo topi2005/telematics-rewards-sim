@@ -1,0 +1,9 @@
+segment_type,segment,drivers,avg_score,pct_scoring_80_plus,claims,claims_per_driver_year
+Age band,18-24,492,56.7,11.2,66,0.272
+Age band,25-34,1438,63.4,20.2,153,0.2147
+Age band,35-49,1598,69.5,29.7,132,0.165
+Age band,50-64,1074,70.9,34.4,93,0.1705
+Age band,65+,398,64.1,22.9,37,0.1857
+Region,rural,730,68.5,30.0,94,0.1746
+Region,suburban,1800,67.4,27.4,170,0.183
+Region,urban,2470,64.9,23.0,217,0.2101

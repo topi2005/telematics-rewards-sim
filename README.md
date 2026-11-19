@@ -13,7 +13,7 @@ A simulation of how an insurer could score driving behaviour from telematics dat
 | 2 | Explainable driver score | Done |
 | 3 | Validation against claims | Done |
 | 4 | Rewards simulation | Done |
-| 5 | SQL aggregations | To do |
+| 5 | SQL aggregations | Done |
 | 6 | Power BI dashboard | To do |
 | 7 | One-page summary | To do |
 
@@ -33,8 +33,8 @@ Because the data is synthetic, the project demonstrates method and reasoning. It
 **[fill in after step 6]** 3 to 4 bullets with real numbers, for example:
 
 - Claim frequency in the lowest score decile was X times that of the highest. (Step 3 gives the first numbers: the lowest quintile has 3.6 times the highest quintile's frequency.)
-- Reward design B (streaks) achieved the highest engagement but cost Y% more than design A.
-- The ranking of designs changed when driver responsiveness was reduced, so the conclusion depends on that assumption.
+- Reward design B (streaks) achieved the highest engagement but cost Y% more than design A. (Step 4 gives the first numbers: B's weekly effort rate is 0.40 against 0.33 for A, at about 60% higher cost.)
+- The ranking of designs changed when driver responsiveness was reduced, so the conclusion depends on that assumption. (Step 4 finds the ranking is stable, but whether any design pays for itself is not.)
 
 ## Repository structure
 
@@ -48,9 +48,12 @@ telematics-rewards-sim/
 │   ├── generate_data.py   # step 1
 │   ├── score.py           # step 2
 │   ├── evaluate.py        # step 3
-│   └── simulate_rewards.py  # step 4
+│   ├── simulate_rewards.py  # step 4
+│   └── run_sql.py         # step 5: build SQLite db, run queries, export CSVs
+├── tests/                 # SQL results reconciled against the Python results
 ├── notebooks/
-├── dashboard/             # .pbix and screenshots
+├── dashboard/
+│   └── data/              # CSV exports from the SQL queries, imported by Power BI
 └── report/summary.pdf     # one-page findings
 ```
 
@@ -67,6 +70,15 @@ python src/score.py --trips data/trips.csv --out data/drivers_scored.csv
 
 # Step 3: validate the score against claims (writes tables and charts to report/)
 python src/evaluate.py --data data --weeks 26 --report-dir report
+
+# Step 4: simulate reward designs (writes reward_events.csv, outcomes and summaries)
+python src/simulate_rewards.py --data data --report-dir report
+
+# Step 5: load outputs into SQLite, run sql/*.sql, export CSVs for Power BI
+python src/run_sql.py --data data --sql sql --out dashboard/data
+
+# Check the SQL results against the Python results (works with or without pytest)
+python tests/test_sql_reconciliation.py
 ```
 
 The same seed reproduces identical data.
@@ -165,17 +177,75 @@ Speeding matters more than the hand weights assume, and harsh braking matters le
 
 ## Reward designs and assumptions
 
-**[fill in after step 4]** The three designs to be compared:
+Run with `python src/simulate_rewards.py`. Three designs are compared with a no-rewards control over 26 weeks. All behaviour parameters sit in one labelled block at the top of the script.
 
-- **A, flat cashback:** a fixed weekly reward when the weekly score meets the goal
-- **B, streaks:** the reward multiplier grows with consecutive weeks meeting the goal and resets on a miss
-- **C, tiers and leaderboard:** bronze, silver and gold levels with a monthly rank bonus
+| Design | Mechanics |
+|---|---|
+| **A, flat cashback** | R10 per week when the weekly score is 80 or higher |
+| **B, streaks** | Same goal. The reward multiplier grows by 0.25 per consecutive week (capped at 2x) and a miss resets the streak. Motivation also dips for two weeks after losing a streak of four or more weeks |
+| **C, tiers and leaderboard** | Weekly reward by tier (bronze 65+ R5, silver 75+ R10, gold 85+ R15) plus a R50 monthly bonus for the top 10% of drivers |
+| **Control** | No rewards. Drivers still make some organic effort (half their engagement propensity) |
 
-The behaviour model (how likely a driver is to improve under each design) is an assumption, not an empirical finding. Document each assumption here.
+**How behaviour is modelled (all assumptions)**
+
+1. Each week a design-specific "pull" shifts the log-odds that a driver makes an effort. Pull is stronger when the goal is within reach (goal-gradient), grows with streak length in B, and in C depends on closeness to the next tier and on leaderboard percentile.
+2. Effort raises the driver's underlying score by a random gain that is larger when there is more room to improve. Accumulated gains decay by 10% a week.
+3. The observed weekly score is the underlying score plus noise (sd 6 points), so goals are partly hit by luck.
+4. Estimated claims saving is the drop in expected claims cost versus the control, using the step 3 relationship (0.80 times the claim rate per +10 points).
+
+The simulation uses identical random draws across designs, so differences between designs come from the design and not from luck.
 
 ## Results
 
-**[fill in after steps 4 to 6]** Dashboard screenshots and a table of engagement, average score change, reward cost and estimated claims saving by design, plus the sensitivity check on driver responsiveness.
+**Base scenario (26 weeks, per driver)**
+
+| | A: Flat | B: Streaks | C: Tiers + leaderboard |
+|---|---|---|---|
+| Weekly effort rate (control 0.20) | 0.33 | 0.40 | 0.38 |
+| Average score uplift (points) | 0.80 | 0.99 | 1.20 |
+| Reward cost | R83 | R133 | R200 |
+| Estimated claims saving | R38 | R45 | R60 |
+| **Net (saving minus cost)** | **-R45** | **-R88** | **-R140** |
+| Saving per R1 of reward | 0.46 | 0.34 | 0.30 |
+| Uplift needed to break even (points) | 1.7 | 3.0 | 4.0 |
+| Uplift, lowest third of baseline scores | 0.5 | 0.5 | 1.1 |
+
+Charts: `report/reward_designs.png`. Full tables: `report/reward_design_summary.csv` and `report/reward_sensitivity.csv`.
+
+**What the simulation suggests (under these assumptions)**
+
+- **Claims savings alone do not pay for the rewards.** Every design costs more than the estimated saving in the base scenario. Rewards would need to be justified by other benefits such as retention, acquisition or data, which this simulation does not model.
+- **Flat cashback is the most cost-efficient**, returning R0.46 of saving per R1 of reward against R0.30 to R0.34 for the others. B and C raise engagement and uplift more, but their extra cost outweighs the extra saving.
+- **Tiers reach the riskiest drivers better.** The lowest third of baseline scores gains about 1.1 points under C but only 0.5 under A and B, because a bronze tier at 65 is within reach where a goal of 80 is not. This follows from the goal-gradient assumption, so treat it as a hypothesis to test.
+- **Most reward money goes to drivers who were already safe.** Results by baseline score third (`sql/08_economics_by_baseline_third.sql`): the highest third receives R206 (A) to R417 (C) per driver in rewards for savings of only R27 to R44. The lowest third is net positive under every design (+R34 under A and B, +R54 under C), because they rarely hit the goal, so they cost little, while a point of improvement is worth more on a riskier driver. The overall negative net is therefore driven by paying for behaviour that would largely happen anyway. This points to rewarding improvement rather than level, or targeting rewards at riskier drivers, which is worth testing.
+- **Streaks barely matter here.** With about one in three weeks meeting the goal, long streaks are rare, so the streak-loss assumption changes B's net result by less than R1.
+
+**Sensitivity** (9 combinations of driver responsiveness and effect size per week of effort)
+
+- A ranks first on net benefit in all 9, so the ranking is stable.
+- The conclusion that rewards do not pay for themselves is **not** stable. A turns positive in 2 of the 9 scenarios (when drivers are 1.5 times more responsive and each week of effort is worth at least twice as much). B and C stay negative in all 9.
+- The result therefore hinges on how much effort translates into a better score, which real experiments would have to measure.
+
+**Simulation noise** across 10 random seeds is small (standard deviation under R1 per driver), so the differences between designs are not a sampling artefact. Model uncertainty, as shown by the sensitivity table, is far larger.
+
+## SQL and dashboard data
+
+Step 5 loads the simulation outputs into SQLite and runs eight queries (window functions, CTEs, joins and conditional aggregation). `run_sql.py` exports each result to `dashboard/data/` so Power BI can import the CSVs directly.
+
+| Query | Dashboard page | Content |
+|---|---|---|
+| `01_portfolio_score_bands` | 1. Portfolio | Drivers, claims and frequency by score band |
+| `02_score_deciles` | 1. Portfolio | Claim frequency by score decile |
+| `03_segment_check` | 1. Portfolio | Score and claims by age band and region |
+| `04_weekly_engagement` | 2. Engagement, 3. Economics | Effort rate, goal hit rate, rewards and cumulative cost by design and week |
+| `05_streak_distribution` | 2. Engagement | Streak lengths over time (design B) |
+| `06_tier_distribution` | 2. Engagement | Tier mix over time (design C) |
+| `07_design_economics` | 3. Economics | Reward cost vs estimated claims saving by design |
+| `08_economics_by_baseline_third` | 3. Economics | Who benefits: results by baseline score third |
+
+**Testing:** `tests/test_sql_reconciliation.py` compares the SQL results with the independent Python calculations from steps 3 and 4 (deciles, weekly metrics, design economics) and checks completeness (every driver present in every week and design, shares sum to one, the control pays nothing). A wrong join or denominator would otherwise put wrong numbers on the dashboard without any error.
+
+**Segment view:** only 11% of drivers aged 18 to 24 score 80 or higher, against 34% of those aged 50 to 64, so goal-based rewards would be claimed far less often by young drivers. In this synthetic data that follows from the built-in risk gap, but it is the kind of effect a real programme would need to review for fairness.
 
 ## Limitations
 

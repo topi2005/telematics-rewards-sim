@@ -1,0 +1,4 @@
+design,drivers,avg_score_uplift_pts,reward_cost_per_driver,claims_saving_per_driver,net_per_driver,saving_per_R1_reward,total_reward_cost,total_claims_saving
+A: Flat cashback,5000,0.8,82.65,37.79,-44.85,0.457,413230.0,188972.0
+B: Streaks,5000,0.99,132.67,44.58,-88.09,0.336,663353.0,222899.0
+C: Tiers + leaderboard,5000,1.2,199.72,60.05,-139.67,0.301,998610.0,300264.0
